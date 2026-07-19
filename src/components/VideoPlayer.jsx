@@ -21,6 +21,7 @@ import {
 import FavoriteButton from './FavoriteButton'
 import { useTvStore } from '../store/tvStore'
 import useOnlineStatus from '../hooks/useOnlineStatus'
+import { useNowPlaying, formatTime } from '../lib/epg'
 
 const normalizeStreamUrl = (url = '') => {
   let normalized = url.replace(/&amp;/g, '&')
@@ -137,6 +138,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
   const [networkError, setNetworkError] = useState(false)
   const [digitBuffer, setDigitBuffer] = useState('')
   const digitTimerRef = useRef(null)
+  const epg = useNowPlaying(channel?.name)
 
   // All URLs for this channel: primary first, then alternates from other sources
   const urls = useMemo(
@@ -681,6 +683,15 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
                 </div>
                 <h1 className="truncate text-xl font-black sm:text-3xl tv:text-5xl">{channel.name}</h1>
                 <p className="mt-1 text-sm font-semibold uppercase tracking-[0.18em] text-white/50 tv:text-xl">{channel.category}</p>
+                {epg?.now && (
+                  <p className="mt-1 truncate text-sm font-semibold text-white/70 tv:text-xl">
+                    <span className="text-[#e50914]">Now:</span> {epg.now.t}
+                    <span className="text-white/40"> · until {formatTime(epg.now.e)}</span>
+                    {epg.next && (
+                      <span className="hidden text-white/40 sm:inline"> · Next: {epg.next.t}</span>
+                    )}
+                  </p>
+                )}
               </div>
             </div>
 
