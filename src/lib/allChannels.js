@@ -1,4 +1,5 @@
 import { CODE_CLOUD_BD, MRGIFY_TV, PRIATES_TV, AKASH_TV, DEKHO_PRIME, ADULT_IPTV, SPORTS_PLUS, SRI_LANKA_TV, ENGLISH_TV, SLSTREAM_LANKA, WORLD_NEWS } from './multipleChannelData'
+import streamStatus from './streamStatus.json'
 
 // ─── Category normalisation ───────────────────────────────────────────────────
 
@@ -101,8 +102,21 @@ for (const ch of rawChannels) {
   seenIds.add(finalId)
   ch.id = finalId
   delete ch._rawId
-  
+
   allChannels.push(ch)
+}
+
+// ─── Stream health (from nightly GitHub Action → streamStatus.json) ──────────
+
+const deadUrls = new Set(streamStatus.deadUrls || [])
+for (const ch of allChannels) {
+  ch.maybeOffline = deadUrls.has(ch.url)
+}
+
+/** Sort helper: healthy channels first, then A→Z by name. */
+function byHealthThenName(a, b) {
+  if (a.maybeOffline !== b.maybeOffline) return a.maybeOffline ? 1 : -1
+  return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
 }
 
 // ─── Pre-built indices (computed once at module load, O(1) access everywhere) ─
@@ -122,7 +136,7 @@ export const channelIndex = new Map(allChannels.map((ch) => [ch.id, ch]))
  */
 export const lankaChannels = allChannels
   .filter((ch) => ch.sourceSlug === 'lanka' || ch.sourceSlug === 'sri-lanka-tv')
-  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+  .sort(byHealthThenName)
 
 export const channelsByCategory = (() => {
   const map = new Map()
@@ -131,9 +145,9 @@ export const channelsByCategory = (() => {
     if (list) list.push(ch)
     else map.set(ch.category, [ch])
   }
-  // Sort each bucket A→Z
+  // Sort each bucket: healthy first, then A→Z
   for (const list of map.values()) {
-    list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+    list.sort(byHealthThenName)
   }
   // Synthetic category: Sri Lankan channels grouped by origin, not genre
   map.set('Sri Lankan', lankaChannels)

@@ -117,6 +117,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
   const mountedRef = useRef(true)
   const settings = useTvStore((state) => state.settings)
   const updateSettings = useTvStore((state) => state.updateSettings)
+  const markOffline = useTvStore((state) => state.markOffline)
+  const markOnline = useTvStore((state) => state.markOnline)
   const selectedQualityRef = useRef(settings.streamQuality || 'auto')
 
   const [isPlaying, setIsPlaying] = useState(false)
@@ -222,6 +224,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
       setIsBuffering(false)
       setIsPlaying(true)
       setError('')
+      // Stream works — clear any session offline flag for this channel
+      markOnline(channel?.id)
       startStallWatchdog()
     }
     const onPause = () => {
@@ -324,6 +328,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
         setError('Live stream connection failed. Try reconnecting.')
         setIsLoading(false)
         setIsBuffering(false)
+        // Remember the failure so channel cards show an "Offline" badge this session
+        markOffline(channel?.id)
       })
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Safari native HLS
@@ -353,7 +359,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
       video.removeAttribute('src')
       video.load()
     }
-  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings])
+  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings, channel?.id, markOffline, markOnline])
 
   // Sync volume/mute to video element and persist
   useEffect(() => {
