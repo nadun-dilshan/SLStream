@@ -135,7 +135,33 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
   const [activeQuality, setActiveQuality] = useState('auto')
   const [networkError, setNetworkError] = useState(false)
 
-  const streamUrl = useMemo(() => normalizeStreamUrl(channel?.url), [channel?.url])
+  // All URLs for this channel: primary first, then alternates from other sources
+  const urls = useMemo(
+    () => [channel?.url, ...(channel?.altUrls || [])].filter(Boolean).map(normalizeStreamUrl),
+    [channel?.url, channel?.altUrls],
+  )
+  const [urlIndex, setUrlIndex] = useState(0)
+  const urlIndexRef = useRef(0)
+
+  // Reset source index when the channel changes (render-time derived-state reset)
+  const [prevChannelId, setPrevChannelId] = useState(channel?.id)
+  if (prevChannelId !== channel?.id) {
+    setPrevChannelId(channel?.id)
+    urlIndexRef.current = 0
+    setUrlIndex(0)
+  }
+
+  /** Advance to the next alternate source URL. Returns false when exhausted. */
+  const tryNextSource = useCallback(() => {
+    if (urlIndexRef.current + 1 < urls.length) {
+      urlIndexRef.current += 1
+      setUrlIndex(urlIndexRef.current)
+      return true
+    }
+    return false
+  }, [urls.length])
+
+  const streamUrl = urls[Math.min(urlIndex, urls.length - 1)] || ''
 
   const showControls = useCallback(() => {
     setControlsVisible(true)
@@ -165,6 +191,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
   const reconnect = useCallback(() => {
     if (!streamUrl) return
     reconnectRef.current = 0
+    urlIndexRef.current = 0
+    setUrlIndex(0)
     setError('')
     setNetworkError(false)
     setIsLoading(true)
@@ -242,6 +270,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
     }
     const onError = () => {
       if (!mountedRef.current) return
+      if (tryNextSource()) return
       setError('This stream is temporarily unavailable.')
       setIsLoading(false)
       setIsBuffering(false)
@@ -325,6 +354,9 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
           return
         }
 
+        // Silently fail over to an alternate source before surfacing an error
+        if (tryNextSource()) return
+
         setError('Live stream connection failed. Try reconnecting.')
         setIsLoading(false)
         setIsBuffering(false)
@@ -359,7 +391,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
       video.removeAttribute('src')
       video.load()
     }
-  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings, channel?.id, markOffline, markOnline])
+  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings, channel?.id, markOffline, markOnline, tryNextSource])
 
   // Sync volume/mute to video element and persist
   useEffect(() => {

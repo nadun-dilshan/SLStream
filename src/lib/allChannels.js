@@ -78,31 +78,58 @@ function normalizeSource(source) {
 const multiSources = [SLSTREAM_LANKA, SRI_LANKA_TV, WORLD_NEWS, ENGLISH_TV, SPORTS_PLUS, CODE_CLOUD_BD, MRGIFY_TV, PRIATES_TV, AKASH_TV, DEKHO_PRIME, ADULT_IPTV]
 const rawChannels = multiSources.flatMap(normalizeSource)
 
+/**
+ * Merge key: same channel offered by multiple sources. Strips quality
+ * suffixes like "(720p)" and "[Not 24/7]" so "Sirasa TV (720p)" and
+ * "Sirasa TV (1080p)" collapse into one channel with alternate URLs.
+ * Adult channels never merge with non-adult ones.
+ */
+function nameKey(ch) {
+  const cleaned = ch.name
+    .replace(/\([^)]*\)/g, '')
+    .replace(/\[[^\]]*\]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+  return `${ch.isAdult ? 'x:' : ''}${cleaned}`
+}
+
 const seenUrls = new Set()
 const seenIds = new Set()
+const byNameKey = new Map()
 const allChannels = []
 
 for (const ch of rawChannels) {
   if (!ch.url) continue
   if (seenUrls.has(ch.url)) continue
-  
+
   seenUrls.add(ch.url)
-  
+
+  // Same channel from another source → keep as an alternate (failover) URL
+  const key = nameKey(ch)
+  const existing = byNameKey.get(key)
+  if (existing) {
+    existing.altUrls.push(ch.url)
+    continue
+  }
+
   // Generate perfect slug
   let baseSlug = slugify(ch._rawId || ch.name || 'channel')
   let finalId = `${ch.sourceSlug}-${baseSlug}`
-  
+
   // Ensure strict uniqueness for the Map
   let counter = 1
   while (seenIds.has(finalId)) {
     finalId = `${ch.sourceSlug}-${baseSlug}-${counter}`
     counter++
   }
-  
+
   seenIds.add(finalId)
   ch.id = finalId
+  ch.altUrls = []
   delete ch._rawId
 
+  byNameKey.set(key, ch)
   allChannels.push(ch)
 }
 
@@ -110,7 +137,8 @@ for (const ch of rawChannels) {
 
 const deadUrls = new Set(streamStatus.deadUrls || [])
 for (const ch of allChannels) {
-  ch.maybeOffline = deadUrls.has(ch.url)
+  // Only offline when the primary AND every alternate URL are dead
+  ch.maybeOffline = deadUrls.has(ch.url) && ch.altUrls.every((u) => deadUrls.has(u))
 }
 
 /** Sort helper: healthy channels first, then A→Z by name. */
