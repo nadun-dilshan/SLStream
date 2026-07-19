@@ -9,6 +9,7 @@ import ChannelGrid from '../components/ChannelGrid'
 import SearchBar from '../components/SearchBar'
 import CategoryFilter from '../components/CategoryFilter'
 import Seo from '../components/Seo'
+import { useT } from '../lib/i18n'
 
 // Stable module-level pools — no re-creation on each render
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
@@ -23,6 +24,7 @@ const rowCategories = [
 
 /** One-time "pick up where you left off" toast, shown once per session. */
 function ResumeToast({ channel }) {
+  const t = useT()
   const [visible, setVisible] = useState(
     () => Boolean(channel) && !sessionStorage.getItem('slstream_resume_shown'),
   )
@@ -48,7 +50,7 @@ function ResumeToast({ channel }) {
           </span>
           <span className="min-w-0">
             <span className="block text-[0.6rem] font-black uppercase tracking-widest text-white/40">
-              Continue watching
+              {t('continueWatchingToast')}
             </span>
             <span className="block truncate text-sm font-bold text-white">{channel.name}</span>
           </span>
@@ -67,6 +69,7 @@ function ResumeToast({ channel }) {
 }
 
 export default function Home() {
+  const t = useT()
   const [query, setQuery] = useState('')
   const favoriteIds = useTvStore((state) => state.favoriteIds)
   const recentlyWatchedIds = useTvStore((state) => state.recentlyWatchedIds)
@@ -128,12 +131,12 @@ export default function Home() {
               <div className="max-w-2xl">
                 <p className="mb-3 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.3em] text-[#e50914]">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#e50914]" />
-                  Live TV · Free
+                  {t('liveTvFree')}
                 </p>
                 <h1 className="text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl tv:text-8xl">
-                  Unlimited live TV.
+                  {t('heroTitle')}
                   <br />
-                  <span className="text-white/70">One place. Zero cost.</span>
+                  <span className="text-white/70">{t('heroSubtitle')}</span>
                 </h1>
                 <p className="mt-4 max-w-xl text-sm font-medium text-white/60 sm:text-base tv:text-2xl">
                   Sri Lankan channels, world news, sports, movies and music — {allChannels.length}+ live channels streaming in HD.
@@ -146,14 +149,14 @@ export default function Home() {
                     className="animate-fade-in inline-flex h-12 items-center gap-2.5 rounded bg-[#e50914] px-6 text-base font-black text-white shadow-xl shadow-[#e50914]/30 transition hover:bg-[#f6121d] focus:outline-none focus:ring-2 focus:ring-white/80 tv:h-16 tv:px-9 tv:text-2xl"
                   >
                     <Play className="h-5 w-5 fill-current tv:h-6 tv:w-6" />
-                    {featured.id === currentChannelId ? 'Resume' : 'Play'} {featured.name}
+                    {featured.id === currentChannelId ? t('resume') : t('play')} {featured.name}
                   </Link>
                   <Link
                     to="/search"
                     className="inline-flex h-12 items-center gap-2 rounded bg-white/20 px-6 text-base font-bold text-white backdrop-blur transition hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/60 tv:h-16 tv:px-9 tv:text-2xl"
                   >
                     <Info className="h-5 w-5" />
-                    Browse All
+                    {t('browseAll')}
                   </Link>
                 </div>
               </div>
@@ -175,7 +178,7 @@ export default function Home() {
         {query ? (
           /* ── Search results grid ── */
           <section>
-            <h2 className="mb-3 text-lg font-black tracking-tight">Results for “{query}”</h2>
+            <h2 className="mb-3 text-lg font-black tracking-tight">{t('resultsFor')} “{query}”</h2>
             <ChannelGrid
               channels={filteredChannels}
               emptyTitle="No matching channels"
@@ -185,8 +188,8 @@ export default function Home() {
         ) : (
           /* ── Netflix-style rows ── */
           <div className="space-y-8 tv:space-y-12">
-            <ChannelRow title="Continue Watching" channels={recentlyWatched} />
-            <ChannelRow title="My List" channels={favorites} viewAllTo="/favorites" />
+            <ChannelRow title={t('continueWatching')} channels={recentlyWatched} />
+            <ChannelRow title={t('myList')} channels={favorites} viewAllTo="/favorites" />
             {rowCategories.map((category) => {
               const list = channelsByCategory.get(category) ?? []
               const visible = adultEnabled ? list : list.filter((ch) => !ch.isAdult)

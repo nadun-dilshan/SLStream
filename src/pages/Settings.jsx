@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { RotateCcw, Settings as SettingsIcon, ShieldAlert, Volume2, Zap, Eye } from 'lucide-react'
+import { Languages, RotateCcw, Settings as SettingsIcon, ShieldAlert, Volume2, Zap, Eye } from 'lucide-react'
 import { useTvStore } from '../store/tvStore'
 import Seo from '../components/Seo'
+import { LANGUAGES, useT } from '../lib/i18n'
 
 function ToggleSwitch({ checked, onChange, id }) {
   return (
@@ -101,6 +102,7 @@ function SectionTitle({ icon: Icon, label }) {
 }
 
 export default function Settings() {
+  const t = useT()
   const settings = useTvStore((state) => state.settings)
   const updateSettings = useTvStore((state) => state.updateSettings)
   const clearRecentlyWatched = useTvStore((state) => state.clearRecentlyWatched)
@@ -142,6 +144,29 @@ export default function Settings() {
           <h1 className="text-3xl font-black sm:text-4xl tv:text-6xl">Settings</h1>
           <p className="mt-1 text-sm text-white/40 tv:text-xl">Saved on this device.</p>
         </header>
+
+        {/* Language */}
+        <section className="space-y-2">
+          <SectionTitle icon={Languages} label={t('language')} />
+          <div className="flex flex-wrap gap-2 rounded-2xl border border-white/[0.07] bg-white/[0.05] p-4">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => updateSettings({ language: lang.code })}
+                className={[
+                  'rounded-lg border px-4 py-2 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-[#e50914]/60',
+                  (settings.language || 'en') === lang.code
+                    ? 'border-[#e50914] bg-[#e50914] text-white'
+                    : 'border-white/[0.08] bg-[#181818] text-white/60 hover:bg-[#232323] hover:text-white/90',
+                ].join(' ')}
+              >
+                {lang.label}
+              </button>
+            ))}
+            <p className="w-full pt-1 text-xs text-white/35">{t('languageHint')}</p>
+          </div>
+        </section>
 
         {/* Playback */}
         <section className="space-y-2">

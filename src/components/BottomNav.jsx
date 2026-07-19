@@ -1,14 +1,17 @@
 import { NavLink } from 'react-router-dom'
 import { Heart, Home, Search, Settings } from 'lucide-react'
+import { useT } from '../lib/i18n'
 
 const items = [
-  { to: '/', label: 'Home', icon: Home },
-  { to: '/search', label: 'Search', icon: Search },
-  { to: '/favorites', label: 'My List', icon: Heart },
-  { to: '/settings', label: 'More', icon: Settings },
+  { to: '/', labelKey: 'home', icon: Home },
+  { to: '/search', labelKey: 'search', icon: Search },
+  { to: '/favorites', labelKey: 'myList', icon: Heart },
+  { to: '/settings', labelKey: 'more', icon: Settings },
 ]
 
 export default function BottomNav() {
+  const t = useT()
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-black/85 px-2 pb-safe pt-1 backdrop-blur-xl lg:hidden">
       <div className="grid grid-cols-4 gap-1">
@@ -27,7 +30,7 @@ export default function BottomNav() {
               ].join(' ')}
             >
               <Icon className="h-5 w-5" />
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           )
         })}
