@@ -73,7 +73,7 @@ export const useTvStore = create(
       },
     }),
     {
-      name: 'slstream-v1',           // rebrand — fresh storage namespace
+      name: 'slstream-v1',           // rebrand - fresh storage namespace
       partialize: (state) => ({
         favoriteIds: state.favoriteIds,
         recentlyWatchedIds: state.recentlyWatchedIds,

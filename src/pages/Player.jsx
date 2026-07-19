@@ -6,7 +6,7 @@ import VideoPlayer from '../components/VideoPlayer'
 import { useTvStore } from '../store/tvStore'
 import Seo from '../components/Seo'
 
-// Total channel count — stable, computed once
+// Total channel count - stable, computed once
 const TOTAL = allChannels.length
 
 export default function Player() {

@@ -15,7 +15,7 @@ export default function AppRoutes() {
 
   return (
     <Suspense fallback={<PageSkeleton />}>
-      {/* CSS fade keyed by path — replaces framer-motion page transitions */}
+      {/* CSS fade keyed by path - replaces framer-motion page transitions */}
       <div key={location.pathname} className="animate-fade-in min-h-full">
         <Routes location={location}>
           <Route path="/" element={<Home />} />

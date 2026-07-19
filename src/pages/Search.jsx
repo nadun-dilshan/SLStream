@@ -8,7 +8,7 @@ import CategoryFilter from '../components/CategoryFilter'
 import Seo from '../components/Seo'
 import searchChannels from '../lib/searchChannels'
 
-// Pre-filter adult channels outside component — stable reference, never re-created
+// Pre-filter adult channels outside component - stable reference, never re-created
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
 const allWithAdult = allChannels
 

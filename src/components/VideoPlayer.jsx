@@ -29,7 +29,7 @@ const normalizeStreamUrl = (url = '') => {
   let normalized = url.replace(/&amp;/g, '&')
   // Upgrade insecure HTTP stream URLs to HTTPS only when the app itself is
   // served over HTTPS (e.g. Vercel), where the browser would block them as
-  // Mixed Content. Over plain HTTP (local dev/LAN) keep the original URL —
+  // Mixed Content. Over plain HTTP (local dev/LAN) keep the original URL -
   // many IPTV servers have broken or slow TLS and the forced upgrade makes
   // otherwise-working streams stall or fail.
   if (normalized.startsWith('http://') && window.location.protocol === 'https:') {
@@ -66,7 +66,7 @@ const findLevelIndexByHeight = (levels, height) => {
 // seconds of live latency for a deep buffer so jittery segment delivery
 // doesn't stall playback.
 const HLS_CONFIG = {
-  // Live stream settings — lowLatencyMode chases the live edge with a tiny
+  // Live stream settings - lowLatencyMode chases the live edge with a tiny
   // buffer, which constantly rebuffers on slow IPTV origins. Keep a bigger
   // distance from the edge instead.
   liveDurationInfinity: true,
@@ -85,7 +85,7 @@ const HLS_CONFIG = {
   enableWorker: true,
 
   // ABR: start conservatively (~1 Mbps assumption) and be slow to switch up,
-  // quick to switch down — fewer quality flip-flops, fewer stalls.
+  // quick to switch down - fewer quality flip-flops, fewer stalls.
   startLevel: -1,
   abrEwmaDefaultEstimate: 1000000,
   abrBandWidthFactor: 0.8,
@@ -259,7 +259,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
       setIsBuffering(false)
       setIsPlaying(true)
       setError('')
-      // Stream works — clear any session offline flag for this channel
+      // Stream works - clear any session offline flag for this channel
       markOnline(channel?.id)
       startStallWatchdog()
     }
@@ -329,7 +329,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
         setActiveQuality(height ? String(height) : 'auto')
       })
 
-      // Fragment buffered — stream is actively loading
+      // Fragment buffered - stream is actively loading
       hls.on(Hls.Events.FRAG_BUFFERED, () => {
         if (mountedRef.current) setIsBuffering(false)
       })
@@ -480,7 +480,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
 
   const shareChannel = async () => {
     const url = `${window.location.origin}/live/${channel.id}`
-    const payload = { title: `${channel.name} — SLStream`, text: `Watch ${channel.name} live on SLStream`, url }
+    const payload = { title: `${channel.name} - SLStream`, text: `Watch ${channel.name} live on SLStream`, url }
     try {
       if (navigator.share) {
         await navigator.share(payload)
@@ -490,7 +490,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
         setTimeout(() => setShareCopied(false), 2000)
       }
     } catch {
-      // Share dismissed — nothing to do
+      // Share dismissed - nothing to do
     }
     showControls()
   }
@@ -507,7 +507,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
         await video.requestPictureInPicture()
       }
     } catch {
-      // Unsupported for this stream — ignore
+      // Unsupported for this stream - ignore
     }
     showControls()
   }

@@ -25,7 +25,7 @@ async function probe(url) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
   try {
-    // GET (not HEAD) — many HLS origins reject HEAD. We only need headers,
+    // GET (not HEAD) - many HLS origins reject HEAD. We only need headers,
     // so abort the body read immediately after.
     const res = await fetch(url, {
       signal: controller.signal,
@@ -64,4 +64,4 @@ writeFileSync(
   new URL('../src/lib/streamStatus.json', import.meta.url),
   JSON.stringify(status, null, 2) + '\n',
 )
-console.log(`\nwrote streamStatus.json — ${dead.length}/${urls.length} dead`)
+console.log(`\nwrote streamStatus.json - ${dead.length}/${urls.length} dead`)

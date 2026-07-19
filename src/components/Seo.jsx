@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async'
 
 const siteName = 'SLStream'
 const defaultDescription =
-  'SLStream — watch Sri Lankan and international live TV channels free. Sports, news, movies, music and more in one Netflix-style streaming app.'
+  'SLStream - watch Sri Lankan and international live TV channels free. Sports, news, movies, music and more in one Netflix-style streaming app.'
 const defaultUrl = 'https://slstream.nadun.me/'
 const themeColor = '#0b0b0b'
 

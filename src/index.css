@@ -120,7 +120,7 @@ img {
   }
 }
 
-/* Card render optimization — skip layout/paint of offscreen tiles */
+/* Card render optimization - skip layout/paint of offscreen tiles */
 .cv-auto {
   content-visibility: auto;
   contain-intrinsic-size: 200px 160px;

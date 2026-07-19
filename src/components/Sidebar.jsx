@@ -28,7 +28,7 @@ export default function Sidebar() {
         {/* Divider */}
         <div className="h-px w-10 bg-white/[0.08]" />
 
-        {/* Nav items — icon only, tooltip on hover */}
+        {/* Nav items - icon only, tooltip on hover */}
         <nav className="flex flex-1 flex-col items-center justify-center gap-3">
           {items.map((item) => {
             const Icon = item.icon

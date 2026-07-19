@@ -78,13 +78,13 @@ export default function InstallPrompt() {
 
   return (
     <>
-      {/* Backdrop — subtle dark overlay */}
+      {/* Backdrop - subtle dark overlay */}
       <div
         className="animate-fade-in fixed inset-0 z-[9998] bg-black/40 backdrop-blur-sm"
         onClick={handleDismiss}
       />
 
-      {/* Install banner — slides up from bottom */}
+      {/* Install banner - slides up from bottom */}
       <div className="animate-slide-up fixed bottom-0 left-0 right-0 z-[9999] mx-auto max-w-lg px-3 pb-4 sm:px-6 sm:pb-6">
         <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#141414]/95 shadow-[0_-4px_40px_rgba(229,9,20,0.25)] backdrop-blur-2xl">
           {/* Red glow accent */}
@@ -100,7 +100,7 @@ export default function InstallPrompt() {
             <div className="min-w-0 flex-1">
               <p className="text-base font-black text-white">Install SLStream</p>
               <p className="mt-0.5 text-sm leading-snug text-white/60">
-                Add to your home screen for faster access and the best experience — works offline too.
+                Add to your home screen for faster access and the best experience - works offline too.
               </p>
 
               {/* Action buttons */}

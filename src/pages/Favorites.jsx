@@ -8,7 +8,7 @@ import Seo from '../components/Seo'
 
 export default function Favorites() {
   const favoriteIds = useTvStore((state) => state.favoriteIds)
-  // byIds uses channelIndex Map — O(1) per ID, no .find() scan
+  // byIds uses channelIndex Map - O(1) per ID, no .find() scan
   const channels = useMemo(() => byIds(favoriteIds), [favoriteIds])
 
   return (

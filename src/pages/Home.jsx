@@ -12,7 +12,7 @@ import Seo from '../components/Seo'
 import { useT } from '../lib/i18n'
 import searchChannels from '../lib/searchChannels'
 
-// Stable module-level pools — no re-creation on each render
+// Stable module-level pools - no re-creation on each render
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
 const defaultFeatured = lankaChannels.find((ch) => !ch.isAdult) || safeChannels[0]
 
@@ -117,7 +117,7 @@ export default function Home() {
     <>
       <Seo
         title="Watch Live TV Free"
-        description={`Stream ${allChannels.length}+ live TV channels on SLStream — Sri Lankan TV, sports, news, movies, music and more.`}
+        description={`Stream ${allChannels.length}+ live TV channels on SLStream - Sri Lankan TV, sports, news, movies, music and more.`}
       />
       <div className="space-y-8 tv:space-y-12">
 
@@ -139,7 +139,7 @@ export default function Home() {
                   <span className="text-white/70">{t('heroSubtitle')}</span>
                 </h1>
                 <p className="mt-4 max-w-xl text-sm font-medium text-white/60 sm:text-base tv:text-2xl">
-                  Sri Lankan channels, world news, sports, movies and music — {allChannels.length}+ live channels streaming in HD.
+                  Sri Lankan channels, world news, sports, movies and music - {allChannels.length}+ live channels streaming in HD.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <Link
@@ -161,7 +161,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Featured card — keyed so rotation crossfades */}
+              {/* Featured card - keyed so rotation crossfades */}
               <div key={featured.id} className="animate-fade-in hidden lg:block lg:w-52 xl:w-60">
                 <ChannelCard channel={featured} featured />
               </div>

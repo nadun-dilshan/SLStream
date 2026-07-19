@@ -67,7 +67,7 @@ function normalizeSource(source) {
       sourceSlug: source.slug,
       sourceName,
       number: null,
-      // Pre-built lowercase search string — avoids template-literal concat on every keystroke
+      // Pre-built lowercase search string - avoids template-literal concat on every keystroke
       _search: `${name} ${category} ${sourceName}`.toLowerCase(),
     }
   })
@@ -139,7 +139,7 @@ allChannels.forEach((ch, i) => {
   ch.number = i + 1
 })
 
-/** Map<number, channel> — for remote-style quick tuning ("47" → channel 47). */
+/** Map<number, channel> - for remote-style quick tuning ("47" → channel 47). */
 export const channelByNumber = new Map(allChannels.map((ch) => [ch.number, ch]))
 
 // ─── Stream health (from nightly GitHub Action → streamStatus.json) ──────────
@@ -159,17 +159,17 @@ function byHealthThenName(a, b) {
 // ─── Pre-built indices (computed once at module load, O(1) access everywhere) ─
 
 /**
- * Map<id, channel> — O(1) lookup by ID, used in Player, Favorites, byIds()
+ * Map<id, channel> - O(1) lookup by ID, used in Player, Favorites, byIds()
  */
 export const channelIndex = new Map(allChannels.map((ch) => [ch.id, ch]))
 
 /**
- * Map<category, channel[]> — sorted A→Z per category (case-insensitive).
+ * Map<category, channel[]> - sorted A→Z per category (case-insensitive).
  * Used in Category page for instant O(1) category lookup.
  * Both adult and non-adult are stored; callers filter by isAdult themselves.
  */
 /**
- * Sri Lankan channels — the flagship category, sourced by origin not genre.
+ * Sri Lankan channels - the flagship category, sourced by origin not genre.
  */
 export const lankaChannels = allChannels
   .filter((ch) => ch.sourceSlug === 'lanka' || ch.sourceSlug === 'sri-lanka-tv')
@@ -192,7 +192,7 @@ export const channelsByCategory = (() => {
 })()
 
 /**
- * All unique category names (excluding XXX) — "Sri Lankan" pinned first,
+ * All unique category names (excluding XXX) - "Sri Lankan" pinned first,
  * the rest sorted A→Z. Pre-built so CategoryFilter never recomputes it.
  */
 export const allCategories = [

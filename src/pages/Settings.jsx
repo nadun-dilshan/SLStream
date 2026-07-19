@@ -84,7 +84,7 @@ function AdultContentModal({ onConfirm, onCancel }) {
             onClick={onConfirm}
             className="flex-1 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 py-2.5 text-sm font-black text-white shadow-lg shadow-orange-600/25 transition hover:from-orange-400 hover:to-red-400"
           >
-            I'm 18+ — Enable
+            I'm 18+ - Enable
           </button>
         </div>
       </div>
