@@ -74,11 +74,33 @@ export default function Home() {
   const adultEnabled = useTvStore((state) => state.settings.adultContentEnabled)
 
   const visibleChannels = adultEnabled ? allChannels : safeChannels
+  const reducedMotion = useTvStore((state) => state.settings.reducedMotion)
 
-  const featured = useMemo(
-    () => allChannels.find((ch) => ch.id === currentChannelId && !ch.isAdult) || defaultFeatured,
+  const lastWatched = useMemo(
+    () => allChannels.find((ch) => ch.id === currentChannelId && !ch.isAdult) || null,
     [currentChannelId],
   )
+
+  // Billboard rotation pool: last-watched first, then healthy Sri Lankan channels
+  const rotationPool = useMemo(() => {
+    const pool = lastWatched ? [lastWatched] : []
+    for (const ch of lankaChannels) {
+      if (pool.length >= 5) break
+      if (!ch.isAdult && !ch.maybeOffline && !pool.includes(ch)) pool.push(ch)
+    }
+    if (!pool.length) pool.push(defaultFeatured)
+    return pool
+  }, [lastWatched])
+
+  const [heroIndex, setHeroIndex] = useState(0)
+
+  useEffect(() => {
+    if (reducedMotion || rotationPool.length < 2) return undefined
+    const timer = setInterval(() => setHeroIndex((i) => i + 1), 8000)
+    return () => clearInterval(timer)
+  }, [rotationPool, reducedMotion])
+
+  const featured = rotationPool[heroIndex % rotationPool.length]
   const favorites = useMemo(() => byIds(favoriteIds).slice(0, 14), [favoriteIds])
   const recentlyWatched = useMemo(() => byIds(recentlyWatchedIds).slice(0, 14), [recentlyWatchedIds])
 
@@ -118,9 +140,10 @@ export default function Home() {
                 </p>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <Link
+                    key={featured.id}
                     to={`/live/${featured.id}`}
                     data-focusable="true"
-                    className="inline-flex h-12 items-center gap-2.5 rounded bg-[#e50914] px-6 text-base font-black text-white shadow-xl shadow-[#e50914]/30 transition hover:bg-[#f6121d] focus:outline-none focus:ring-2 focus:ring-white/80 tv:h-16 tv:px-9 tv:text-2xl"
+                    className="animate-fade-in inline-flex h-12 items-center gap-2.5 rounded bg-[#e50914] px-6 text-base font-black text-white shadow-xl shadow-[#e50914]/30 transition hover:bg-[#f6121d] focus:outline-none focus:ring-2 focus:ring-white/80 tv:h-16 tv:px-9 tv:text-2xl"
                   >
                     <Play className="h-5 w-5 fill-current tv:h-6 tv:w-6" />
                     {featured.id === currentChannelId ? 'Resume' : 'Play'} {featured.name}
@@ -135,8 +158,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Featured card */}
-              <div className="hidden lg:block lg:w-52 xl:w-60">
+              {/* Featured card — keyed so rotation crossfades */}
+              <div key={featured.id} className="animate-fade-in hidden lg:block lg:w-52 xl:w-60">
                 <ChannelCard channel={featured} featured />
               </div>
             </div>
@@ -181,7 +204,7 @@ export default function Home() {
       </div>
 
       {/* Cold-start resume toast (once per session) */}
-      <ResumeToast channel={featured.id === currentChannelId ? featured : null} />
+      <ResumeToast channel={lastWatched} />
     </>
   )
 }
