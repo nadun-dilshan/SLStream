@@ -10,6 +10,7 @@ import SearchBar from '../components/SearchBar'
 import CategoryFilter from '../components/CategoryFilter'
 import Seo from '../components/Seo'
 import { useT } from '../lib/i18n'
+import searchChannels from '../lib/searchChannels'
 
 // Stable module-level pools — no re-creation on each render
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
@@ -107,11 +108,10 @@ export default function Home() {
   const favorites = useMemo(() => byIds(favoriteIds).slice(0, 14), [favoriteIds])
   const recentlyWatched = useMemo(() => byIds(recentlyWatchedIds).slice(0, 14), [recentlyWatchedIds])
 
-  const filteredChannels = useMemo(() => {
-    const term = query.trim().toLowerCase()
-    if (!term) return null
-    return visibleChannels.filter((ch) => ch._search.includes(term))
-  }, [query, visibleChannels])
+  const filteredChannels = useMemo(
+    () => (query.trim() ? searchChannels(visibleChannels, query) : null),
+    [query, visibleChannels],
+  )
 
   return (
     <>
