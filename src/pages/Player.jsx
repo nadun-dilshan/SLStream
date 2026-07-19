@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Home } from 'lucide-react'
-import allChannels, { channelIndex } from '../lib/allChannels'
+import allChannels, { channelIndex, channelsByCategory } from '../lib/allChannels'
 import VideoPlayer from '../components/VideoPlayer'
 import { useTvStore } from '../store/tvStore'
 import Seo from '../components/Seo'
@@ -46,6 +46,20 @@ export default function Player() {
   const goNext = () => navigate(`/live/${allChannels[(index + 1) % TOTAL].id}`)
   const goPrevious = () => navigate(`/live/${allChannels[(index - 1 + TOTAL) % TOTAL].id}`)
 
+  // Fallback when a stream dies: jump to the next healthy channel in the same category
+  const goNextInCategory = () => {
+    const list = channelsByCategory.get(channel.category) ?? []
+    if (list.length < 2) return goNext()
+    const i = list.indexOf(channel)
+    for (let step = 1; step < list.length; step++) {
+      const candidate = list[(i + step) % list.length]
+      if (!candidate.maybeOffline && !candidate.isAdult) {
+        return navigate(`/live/${candidate.id}`)
+      }
+    }
+    goNext()
+  }
+
   return (
     <div className="relative min-h-screen bg-black">
       <Seo
@@ -54,7 +68,13 @@ export default function Player() {
         image={channel.logo || '/favicon.svg'}
         type="video.other"
       />
-      <VideoPlayer channel={channel} onNext={goNext} onPrevious={goPrevious} onBack={() => navigate(-1)} />
+      <VideoPlayer
+        channel={channel}
+        onNext={goNext}
+        onPrevious={goPrevious}
+        onNextInCategory={goNextInCategory}
+        onBack={() => navigate(-1)}
+      />
     </div>
   )
 }

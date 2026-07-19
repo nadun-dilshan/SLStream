@@ -106,7 +106,7 @@ const HLS_CONFIG = {
   startPosition: -1,
 }
 
-export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
+export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCategory, onBack }) {
   const isOnline = useOnlineStatus()
   const videoRef = useRef(null)
   const shellRef = useRef(null)
@@ -532,14 +532,26 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
           <div className="max-w-xl rounded-card border border-red-300/30 bg-red-950/35 p-6 text-center shadow-2xl backdrop-blur-2xl tv:max-w-3xl tv:p-10">
             <AlertTriangle className="mx-auto h-12 w-12 text-red-300 tv:h-20 tv:w-20" />
             <p className="mt-4 text-xl font-black tv:text-4xl">{error}</p>
-            <button
-              type="button"
-              onClick={reconnect}
-              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#e50914] px-5 font-bold text-white transition hover:bg-[#f6121d] focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
-            >
-              <RotateCcw className="h-5 w-5 tv:h-8 tv:w-8" />
-              Reconnect
-            </button>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {onNextInCategory && (
+                <button
+                  type="button"
+                  onClick={onNextInCategory}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[#e50914] px-5 font-bold text-white transition hover:bg-[#f6121d] focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
+                >
+                  <SkipForward className="h-5 w-5 tv:h-8 tv:w-8" />
+                  Try next in {channel.category}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={reconnect}
+                className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 font-bold text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
+              >
+                <RotateCcw className="h-5 w-5 tv:h-8 tv:w-8" />
+                Reconnect
+              </button>
+            </div>
           </div>
         </div>
       )}
