@@ -6,8 +6,9 @@ import ChannelGrid from '../components/ChannelGrid'
 import SearchBar from '../components/SearchBar'
 import CategoryFilter from '../components/CategoryFilter'
 import Seo from '../components/Seo'
+import searchChannels from '../lib/searchChannels'
 
-// Pre-filter adult channels outside component — stable reference, never re-created
+// Pre-filter adult channels outside component - stable reference, never re-created
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
 const allWithAdult = allChannels
 
@@ -16,11 +17,10 @@ export default function Search() {
   const adultEnabled = useTvStore((state) => state.settings.adultContentEnabled)
 
   const channels = useMemo(() => {
-    const term = query.trim().toLowerCase()
-    if (!term) return []
-    // Use pre-built _search string — no template-literal work per channel per keystroke
+    if (!query.trim()) return []
+    // Ranked results with light typo tolerance
     const pool = adultEnabled ? allWithAdult : safeChannels
-    return pool.filter((ch) => ch._search.includes(term))
+    return searchChannels(pool, query)
   }, [query, adultEnabled])
 
   return (

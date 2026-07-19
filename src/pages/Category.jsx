@@ -4,6 +4,7 @@ import { Grid3X3, Search } from 'lucide-react'
 import { channelsByCategory } from '../lib/allChannels'
 import { useTvStore } from '../store/tvStore'
 import ChannelGrid from '../components/ChannelGrid'
+import ChannelRow from '../components/ChannelRow'
 import CategoryFilter from '../components/CategoryFilter'
 import Seo from '../components/Seo'
 
@@ -12,11 +13,26 @@ export default function Category() {
   const category = decodeURIComponent(name)
   const adultEnabled = useTvStore((state) => state.settings.adultContentEnabled)
 
-  // O(1) map lookup → pre-sorted A-Z list; only filter adult flag
+  // O(1) map lookup → pre-sorted list; only filter adult flag
   const channels = useMemo(() => {
     const list = channelsByCategory.get(category) ?? []
     return adultEnabled ? list : list.filter((ch) => !ch.isAdult)
   }, [category, adultEnabled])
+
+  // Netflix-style sub-rows by source when the category is large and mixed;
+  // small categories stay a simple grid.
+  const sourceRows = useMemo(() => {
+    if (channels.length <= 14) return null
+    const groups = new Map()
+    for (const ch of channels) {
+      const list = groups.get(ch.sourceName)
+      if (list) list.push(ch)
+      else groups.set(ch.sourceName, [ch])
+    }
+    if (groups.size < 2) return null
+    // Biggest sources first
+    return Array.from(groups.entries()).sort((a, b) => b[1].length - a[1].length)
+  }, [channels])
 
   return (
     <div className="space-y-6 tv:space-y-10">
@@ -42,11 +58,19 @@ export default function Category() {
         <CategoryFilter active={category} />
       </header>
 
-      <ChannelGrid
-        channels={channels}
-        emptyTitle="Category not found"
-        emptyText="Choose another category from the filter bar."
-      />
+      {sourceRows ? (
+        <div className="space-y-8 tv:space-y-12">
+          {sourceRows.map(([sourceName, list]) => (
+            <ChannelRow key={sourceName} title={sourceName} channels={list} />
+          ))}
+        </div>
+      ) : (
+        <ChannelGrid
+          channels={channels}
+          emptyTitle="Category not found"
+          emptyText="Choose another category from the filter bar."
+        />
+      )}
     </div>
   )
 }

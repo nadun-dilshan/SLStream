@@ -4,9 +4,12 @@ import {
   AlertTriangle,
   Maximize,
   Minimize,
+  Check,
   Pause,
+  PictureInPicture2,
   Play,
   Settings2,
+  Share2,
   RotateCcw,
   SkipBack,
   SkipForward,
@@ -20,12 +23,13 @@ import {
 import FavoriteButton from './FavoriteButton'
 import { useTvStore } from '../store/tvStore'
 import useOnlineStatus from '../hooks/useOnlineStatus'
+import { useNowPlaying, formatTime } from '../lib/epg'
 
 const normalizeStreamUrl = (url = '') => {
   let normalized = url.replace(/&amp;/g, '&')
   // Upgrade insecure HTTP stream URLs to HTTPS only when the app itself is
   // served over HTTPS (e.g. Vercel), where the browser would block them as
-  // Mixed Content. Over plain HTTP (local dev/LAN) keep the original URL —
+  // Mixed Content. Over plain HTTP (local dev/LAN) keep the original URL -
   // many IPTV servers have broken or slow TLS and the forced upgrade makes
   // otherwise-working streams stall or fail.
   if (normalized.startsWith('http://') && window.location.protocol === 'https:') {
@@ -62,7 +66,7 @@ const findLevelIndexByHeight = (levels, height) => {
 // seconds of live latency for a deep buffer so jittery segment delivery
 // doesn't stall playback.
 const HLS_CONFIG = {
-  // Live stream settings — lowLatencyMode chases the live edge with a tiny
+  // Live stream settings - lowLatencyMode chases the live edge with a tiny
   // buffer, which constantly rebuffers on slow IPTV origins. Keep a bigger
   // distance from the edge instead.
   liveDurationInfinity: true,
@@ -81,7 +85,7 @@ const HLS_CONFIG = {
   enableWorker: true,
 
   // ABR: start conservatively (~1 Mbps assumption) and be slow to switch up,
-  // quick to switch down — fewer quality flip-flops, fewer stalls.
+  // quick to switch down - fewer quality flip-flops, fewer stalls.
   startLevel: -1,
   abrEwmaDefaultEstimate: 1000000,
   abrBandWidthFactor: 0.8,
@@ -106,7 +110,7 @@ const HLS_CONFIG = {
   startPosition: -1,
 }
 
-export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
+export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCategory, onTune, onBack }) {
   const isOnline = useOnlineStatus()
   const videoRef = useRef(null)
   const shellRef = useRef(null)
@@ -117,6 +121,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
   const mountedRef = useRef(true)
   const settings = useTvStore((state) => state.settings)
   const updateSettings = useTvStore((state) => state.updateSettings)
+  const markOffline = useTvStore((state) => state.markOffline)
+  const markOnline = useTvStore((state) => state.markOnline)
   const selectedQualityRef = useRef(settings.streamQuality || 'auto')
 
   const [isPlaying, setIsPlaying] = useState(false)
@@ -132,8 +138,37 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
   const [selectedQuality, setSelectedQuality] = useState(settings.streamQuality || 'auto')
   const [activeQuality, setActiveQuality] = useState('auto')
   const [networkError, setNetworkError] = useState(false)
+  const [digitBuffer, setDigitBuffer] = useState('')
+  const digitTimerRef = useRef(null)
+  const epg = useNowPlaying(channel?.name)
 
-  const streamUrl = useMemo(() => normalizeStreamUrl(channel?.url), [channel?.url])
+  // All URLs for this channel: primary first, then alternates from other sources
+  const urls = useMemo(
+    () => [channel?.url, ...(channel?.altUrls || [])].filter(Boolean).map(normalizeStreamUrl),
+    [channel?.url, channel?.altUrls],
+  )
+  const [urlIndex, setUrlIndex] = useState(0)
+  const urlIndexRef = useRef(0)
+
+  // Reset source index when the channel changes (render-time derived-state reset)
+  const [prevChannelId, setPrevChannelId] = useState(channel?.id)
+  if (prevChannelId !== channel?.id) {
+    setPrevChannelId(channel?.id)
+    urlIndexRef.current = 0
+    setUrlIndex(0)
+  }
+
+  /** Advance to the next alternate source URL. Returns false when exhausted. */
+  const tryNextSource = useCallback(() => {
+    if (urlIndexRef.current + 1 < urls.length) {
+      urlIndexRef.current += 1
+      setUrlIndex(urlIndexRef.current)
+      return true
+    }
+    return false
+  }, [urls.length])
+
+  const streamUrl = urls[Math.min(urlIndex, urls.length - 1)] || ''
 
   const showControls = useCallback(() => {
     setControlsVisible(true)
@@ -163,6 +198,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
   const reconnect = useCallback(() => {
     if (!streamUrl) return
     reconnectRef.current = 0
+    urlIndexRef.current = 0
+    setUrlIndex(0)
     setError('')
     setNetworkError(false)
     setIsLoading(true)
@@ -222,6 +259,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
       setIsBuffering(false)
       setIsPlaying(true)
       setError('')
+      // Stream works - clear any session offline flag for this channel
+      markOnline(channel?.id)
       startStallWatchdog()
     }
     const onPause = () => {
@@ -238,6 +277,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
     }
     const onError = () => {
       if (!mountedRef.current) return
+      if (tryNextSource()) return
       setError('This stream is temporarily unavailable.')
       setIsLoading(false)
       setIsBuffering(false)
@@ -289,7 +329,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
         setActiveQuality(height ? String(height) : 'auto')
       })
 
-      // Fragment buffered — stream is actively loading
+      // Fragment buffered - stream is actively loading
       hls.on(Hls.Events.FRAG_BUFFERED, () => {
         if (mountedRef.current) setIsBuffering(false)
       })
@@ -321,9 +361,14 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
           return
         }
 
+        // Silently fail over to an alternate source before surfacing an error
+        if (tryNextSource()) return
+
         setError('Live stream connection failed. Try reconnecting.')
         setIsLoading(false)
         setIsBuffering(false)
+        // Remember the failure so channel cards show an "Offline" badge this session
+        markOffline(channel?.id)
       })
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Safari native HLS
@@ -353,7 +398,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
       video.removeAttribute('src')
       video.load()
     }
-  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings])
+  }, [streamUrl, settings.autoplay, play, reloadKey, updateSettings, channel?.id, markOffline, markOnline, tryNextSource])
 
   // Sync volume/mute to video element and persist
   useEffect(() => {
@@ -371,6 +416,25 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
     return () => document.removeEventListener('fullscreenchange', onFullscreenChange)
   }, [])
 
+  // Remote-style quick tune: type a channel number, tunes after a short pause
+  const handleDigit = useCallback(
+    (digit) => {
+      if (!onTune) return
+      setDigitBuffer((buffer) => {
+        const next = (buffer + digit).slice(0, 4)
+        window.clearTimeout(digitTimerRef.current)
+        digitTimerRef.current = window.setTimeout(() => {
+          setDigitBuffer('')
+          onTune(Number(next))
+        }, 1200)
+        return next
+      })
+    },
+    [onTune],
+  )
+
+  useEffect(() => () => window.clearTimeout(digitTimerRef.current), [])
+
   // Keyboard shortcuts
   useEffect(() => {
     window.clearTimeout(hideTimerRef.current)
@@ -386,6 +450,9 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
         event.preventDefault()
         onNext?.()
       }
+      if (/^[0-9]$/.test(event.key)) {
+        handleDigit(event.key)
+      }
       if (event.key === ' ') {
         event.preventDefault()
         isPlaying ? videoRef.current?.pause() : play()
@@ -398,7 +465,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isPlaying, onNext, onPrevious, play, showControls])
+  }, [isPlaying, onNext, onPrevious, play, showControls, handleDigit])
 
   const togglePlay = () => {
     showControls()
@@ -407,6 +474,42 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
     } else {
       play()
     }
+  }
+
+  const [shareCopied, setShareCopied] = useState(false)
+
+  const shareChannel = async () => {
+    const url = `${window.location.origin}/live/${channel.id}`
+    const payload = { title: `${channel.name} - SLStream`, text: `Watch ${channel.name} live on SLStream`, url }
+    try {
+      if (navigator.share) {
+        await navigator.share(payload)
+      } else {
+        await navigator.clipboard.writeText(url)
+        setShareCopied(true)
+        setTimeout(() => setShareCopied(false), 2000)
+      }
+    } catch {
+      // Share dismissed - nothing to do
+    }
+    showControls()
+  }
+
+  const pipSupported = typeof document !== 'undefined' && document.pictureInPictureEnabled
+
+  const togglePictureInPicture = async () => {
+    const video = videoRef.current
+    if (!video) return
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture()
+      } else {
+        await video.requestPictureInPicture()
+      }
+    } catch {
+      // Unsupported for this stream - ignore
+    }
+    showControls()
   }
 
   function toggleFullscreen() {
@@ -486,6 +589,14 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/15 to-black/65" />
 
+      {/* Quick-tune digit overlay */}
+      {digitBuffer && (
+        <div className="pointer-events-none absolute right-6 top-6 z-40 rounded-lg border border-white/15 bg-black/75 px-5 py-3 backdrop-blur tv:right-10 tv:top-10">
+          <span className="font-mono text-4xl font-black tracking-widest text-white tv:text-6xl">{digitBuffer}</span>
+          <span className="ml-2 text-xs font-bold uppercase tracking-widest text-white/40 tv:text-lg">CH</span>
+        </div>
+      )}
+
       {showSpinner && !error && (
         <div className="absolute inset-0 grid place-items-center bg-black/35">
           <div className="flex flex-col items-center gap-4">
@@ -526,14 +637,26 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
           <div className="max-w-xl rounded-card border border-red-300/30 bg-red-950/35 p-6 text-center shadow-2xl backdrop-blur-2xl tv:max-w-3xl tv:p-10">
             <AlertTriangle className="mx-auto h-12 w-12 text-red-300 tv:h-20 tv:w-20" />
             <p className="mt-4 text-xl font-black tv:text-4xl">{error}</p>
-            <button
-              type="button"
-              onClick={reconnect}
-              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#e50914] px-5 font-bold text-white transition hover:bg-[#f6121d] focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
-            >
-              <RotateCcw className="h-5 w-5 tv:h-8 tv:w-8" />
-              Reconnect
-            </button>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {onNextInCategory && (
+                <button
+                  type="button"
+                  onClick={onNextInCategory}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[#e50914] px-5 font-bold text-white transition hover:bg-[#f6121d] focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
+                >
+                  <SkipForward className="h-5 w-5 tv:h-8 tv:w-8" />
+                  Try next in {channel.category}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={reconnect}
+                className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 font-bold text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-[#e50914]/50 tv:min-h-16 tv:px-8 tv:text-2xl"
+              >
+                <RotateCcw className="h-5 w-5 tv:h-8 tv:w-8" />
+                Reconnect
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -581,6 +704,15 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
                 </div>
                 <h1 className="truncate text-xl font-black sm:text-3xl tv:text-5xl">{channel.name}</h1>
                 <p className="mt-1 text-sm font-semibold uppercase tracking-[0.18em] text-white/50 tv:text-xl">{channel.category}</p>
+                {epg?.now && (
+                  <p className="mt-1 truncate text-sm font-semibold text-white/70 tv:text-xl">
+                    <span className="text-[#e50914]">Now:</span> {epg.now.t}
+                    <span className="text-white/40"> · until {formatTime(epg.now.e)}</span>
+                    {epg.next && (
+                      <span className="hidden text-white/40 sm:inline"> · Next: {epg.next.t}</span>
+                    )}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -628,6 +760,26 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onBack }) {
                 </label>
               )}
               <FavoriteButton channel={channel} />
+              <button
+                type="button"
+                aria-label="Share channel link"
+                title={shareCopied ? 'Link copied!' : 'Share'}
+                onClick={shareChannel}
+                className="player-button"
+              >
+                {shareCopied ? <Check /> : <Share2 />}
+              </button>
+              {pipSupported && (
+                <button
+                  type="button"
+                  aria-label="Picture in picture"
+                  title="Picture in picture"
+                  onClick={togglePictureInPicture}
+                  className="player-button"
+                >
+                  <PictureInPicture2 />
+                </button>
+              )}
               <button type="button" aria-label="Fullscreen" onClick={toggleFullscreen} className="player-button">
                 {isFullscreen ? <Minimize /> : <Maximize />}
               </button>

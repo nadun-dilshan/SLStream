@@ -16,6 +16,8 @@ export const useTvStore = create(
       favoriteIds: [],
       recentlyWatchedIds: [],
       currentChannelId: null,
+      // Session-only (not persisted): channels whose stream failed this session
+      offlineIds: [],
       settings: {
         autoplay: true,
         muted: false,
@@ -56,9 +58,22 @@ export const useTvStore = create(
         }))
       },
       clearRecentlyWatched: () => set({ recentlyWatchedIds: [] }),
+      markOffline: (id) => {
+        if (!id) return
+        set((state) =>
+          state.offlineIds.includes(id) ? state : { offlineIds: [...state.offlineIds, id] },
+        )
+      },
+      markOnline: (id) => {
+        set((state) =>
+          state.offlineIds.includes(id)
+            ? { offlineIds: state.offlineIds.filter((x) => x !== id) }
+            : state,
+        )
+      },
     }),
     {
-      name: 'slstream-v1',           // rebrand — fresh storage namespace
+      name: 'slstream-v1',           // rebrand - fresh storage namespace
       partialize: (state) => ({
         favoriteIds: state.favoriteIds,
         recentlyWatchedIds: state.recentlyWatchedIds,

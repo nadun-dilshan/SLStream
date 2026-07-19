@@ -7,8 +7,10 @@ import { useTvStore } from '../store/tvStore'
 function ChannelCard({ channel, featured = false, row = false }) {
   const [imageFailed, setImageFailed] = useState(false)
   const adultEnabled = useTvStore((state) => state.settings.adultContentEnabled)
+  const failedThisSession = useTvStore((state) => state.offlineIds.includes(channel.id))
 
   const isBlocked = channel.isAdult && !adultEnabled
+  const isOffline = channel.maybeOffline || failedThisSession
 
   return (
     <article className={['group relative cv-auto', row ? 'w-40 shrink-0 snap-start sm:w-44 tv:w-64' : ''].join(' ')}>
@@ -29,10 +31,20 @@ function ChannelCard({ channel, featured = false, row = false }) {
         <div className="relative z-10 flex h-full flex-col">
           {/* Top row */}
           <div className="flex items-start justify-between gap-2">
-            <span className="inline-flex items-center gap-1 rounded bg-[#e50914] px-1.5 py-0.5 text-[0.58rem] font-black uppercase tracking-widest text-white tv:text-xs">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-              Live
-            </span>
+            {isOffline ? (
+              <span
+                title="This stream failed recently and may be offline"
+                className="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[0.58rem] font-black uppercase tracking-widest text-white/50 tv:text-xs"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
+                Offline
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded bg-[#e50914] px-1.5 py-0.5 text-[0.58rem] font-black uppercase tracking-widest text-white tv:text-xs">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+                Live
+              </span>
+            )}
             {channel.isAdult && (
               <span className="inline-flex items-center gap-1 rounded border border-orange-400/30 bg-orange-500/15 px-1.5 py-0.5 text-[0.58rem] font-black uppercase tracking-widest text-orange-300">
                 18+

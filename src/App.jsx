@@ -1,15 +1,31 @@
-import { BrowserRouter, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, useLocation, useNavigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import BottomNav from './components/BottomNav'
 import AppRoutes from './app/routes'
 import useKeyboardNavigation from './hooks/useKeyboardNavigation'
 import InstallPrompt from './components/InstallPrompt'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function Layout() {
   const location = useLocation()
+  const navigate = useNavigate()
   const isPlayer = location.pathname.startsWith('/live/')
   useKeyboardNavigation({ enabled: !isPlayer })
+
+  // "/" from anywhere jumps to search (like YouTube/GitHub)
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return
+      const tagName = document.activeElement?.tagName?.toLowerCase()
+      if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') return
+      event.preventDefault()
+      navigate('/search')
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [navigate])
 
   return (
     <div className="min-h-screen bg-[#0b0b0b] text-white">
@@ -17,7 +33,9 @@ function Layout() {
       {!isPlayer && <Sidebar />}
       {!isPlayer && <Navbar />}
       <main className={isPlayer ? 'min-h-screen' : 'min-h-screen px-4 pb-20 pt-16 sm:px-6 lg:pl-32 lg:pr-8 lg:pt-20 xl:pl-36'}>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </main>
       {!isPlayer && <BottomNav />}
       <InstallPrompt />
