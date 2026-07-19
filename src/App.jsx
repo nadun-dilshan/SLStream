@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import AppRoutes from './app/routes'
 import useKeyboardNavigation from './hooks/useKeyboardNavigation'
 import InstallPrompt from './components/InstallPrompt'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function Layout() {
   const location = useLocation()
@@ -17,7 +18,9 @@ function Layout() {
       {!isPlayer && <Sidebar />}
       {!isPlayer && <Navbar />}
       <main className={isPlayer ? 'min-h-screen' : 'min-h-screen px-4 pb-20 pt-16 sm:px-6 lg:pl-32 lg:pr-8 lg:pt-20 xl:pl-36'}>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </main>
       {!isPlayer && <BottomNav />}
       <InstallPrompt />
