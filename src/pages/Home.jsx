@@ -12,10 +12,10 @@ import Seo from '../components/Seo'
 
 // Stable module-level pools — no re-creation on each render
 const safeChannels = allChannels.filter((ch) => !ch.isAdult)
-const safeLanka = lankaChannels.filter((ch) => !ch.isAdult)
+const defaultFeatured = lankaChannels.find((ch) => !ch.isAdult) || safeChannels[0]
 
-// Row order: put the strongest categories first, rest alphabetical
-const ROW_PRIORITY = ['Sports', 'News', 'Movies', 'Entertainment', 'Music', 'Kids', 'Cartoon', 'Documentary']
+// Row order: Sri Lankan first, then the strongest categories, rest alphabetical
+const ROW_PRIORITY = ['Sri Lankan', 'Sports', 'News', 'Movies', 'Entertainment', 'Music', 'Kids', 'Cartoon', 'Documentary']
 const rowCategories = [
   ...ROW_PRIORITY.filter((c) => channelsByCategory.has(c)),
   ...allCategories.filter((c) => !ROW_PRIORITY.includes(c)),
@@ -31,7 +31,7 @@ export default function Home() {
   const visibleChannels = adultEnabled ? allChannels : safeChannels
 
   const featured = useMemo(
-    () => allChannels.find((ch) => ch.id === currentChannelId && !ch.isAdult) || safeLanka[0] || safeChannels[0],
+    () => allChannels.find((ch) => ch.id === currentChannelId && !ch.isAdult) || defaultFeatured,
     [currentChannelId],
   )
   const favorites = useMemo(() => byIds(favoriteIds).slice(0, 14), [favoriteIds])
@@ -101,7 +101,7 @@ export default function Home() {
         {/* ── Search + category pills ── */}
         <section className="space-y-3">
           <SearchBar value={query} onChange={setQuery} />
-          {!query && <CategoryFilter compact channels={visibleChannels} />}
+          {!query && <CategoryFilter compact />}
         </section>
 
         {query ? (
@@ -119,7 +119,6 @@ export default function Home() {
           <div className="space-y-8 tv:space-y-12">
             <ChannelRow title="Continue Watching" channels={recentlyWatched} />
             <ChannelRow title="My List" channels={favorites} viewAllTo="/favorites" />
-            <ChannelRow title="Sri Lankan TV" channels={safeLanka} />
             {rowCategories.map((category) => {
               const list = channelsByCategory.get(category) ?? []
               const visible = adultEnabled ? list : list.filter((ch) => !ch.isAdult)

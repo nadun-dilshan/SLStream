@@ -11,7 +11,7 @@ const CATEGORY_MAP = {
   kids: 'Kids',
   documentary: 'Documentary',
   religion: 'Religion',
-  bangla: 'Bangla',
+  bangla: 'General',
   entertainment: 'Entertainment',
   xxx: 'XXX',
 }
@@ -27,7 +27,7 @@ function normalizeCategory(raw) {
   if (key.includes('music')) return 'Music'
   if (key.includes('cartoon')) return 'Cartoon'
   if (key.includes('religion') || key.includes('islamic') || key.includes('religious')) return 'Religion'
-  if (key.includes('bangla')) return 'Bangla'
+  if (key.includes('bangla')) return 'General'
   if (key.includes('documentary') || key.includes('info')) return 'Documentary'
   return raw.trim().charAt(0).toUpperCase() + raw.trim().slice(1)
 }
@@ -117,6 +117,13 @@ export const channelIndex = new Map(allChannels.map((ch) => [ch.id, ch]))
  * Used in Category page for instant O(1) category lookup.
  * Both adult and non-adult are stored; callers filter by isAdult themselves.
  */
+/**
+ * Sri Lankan channels — the flagship category, sourced by origin not genre.
+ */
+export const lankaChannels = allChannels
+  .filter((ch) => ch.sourceSlug === 'lanka' || ch.sourceSlug === 'sri-lanka-tv')
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+
 export const channelsByCategory = (() => {
   const map = new Map()
   for (const ch of allChannels) {
@@ -128,23 +135,21 @@ export const channelsByCategory = (() => {
   for (const list of map.values()) {
     list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
   }
+  // Synthetic category: Sri Lankan channels grouped by origin, not genre
+  map.set('Sri Lankan', lankaChannels)
   return map
 })()
 
 /**
- * Sorted list of all unique category names (excluding XXX).
- * Pre-built so CategoryFilter never recomputes it.
+ * All unique category names (excluding XXX) — "Sri Lankan" pinned first,
+ * the rest sorted A→Z. Pre-built so CategoryFilter never recomputes it.
  */
-export const allCategories = Array.from(channelsByCategory.keys())
-  .filter((c) => c !== 'XXX')
-  .sort()
-
-/**
- * Sri Lankan channels — pre-built for the dedicated home row.
- */
-export const lankaChannels = allChannels.filter(
-  (ch) => ch.sourceSlug === 'lanka' || ch.sourceSlug === 'sri-lanka-tv',
-)
+export const allCategories = [
+  'Sri Lankan',
+  ...Array.from(channelsByCategory.keys())
+    .filter((c) => c !== 'XXX' && c !== 'Sri Lankan')
+    .sort((a, b) => a.localeCompare(b)),
+]
 
 /**
  * Resolve an array of IDs → channels in O(1) per ID using channelIndex.
