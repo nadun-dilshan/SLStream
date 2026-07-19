@@ -4,10 +4,12 @@ import {
   AlertTriangle,
   Maximize,
   Minimize,
+  Check,
   Pause,
   PictureInPicture2,
   Play,
   Settings2,
+  Share2,
   RotateCcw,
   SkipBack,
   SkipForward,
@@ -474,6 +476,25 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
     }
   }
 
+  const [shareCopied, setShareCopied] = useState(false)
+
+  const shareChannel = async () => {
+    const url = `${window.location.origin}/live/${channel.id}`
+    const payload = { title: `${channel.name} — SLStream`, text: `Watch ${channel.name} live on SLStream`, url }
+    try {
+      if (navigator.share) {
+        await navigator.share(payload)
+      } else {
+        await navigator.clipboard.writeText(url)
+        setShareCopied(true)
+        setTimeout(() => setShareCopied(false), 2000)
+      }
+    } catch {
+      // Share dismissed — nothing to do
+    }
+    showControls()
+  }
+
   const pipSupported = typeof document !== 'undefined' && document.pictureInPictureEnabled
 
   const togglePictureInPicture = async () => {
@@ -739,6 +760,15 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
                 </label>
               )}
               <FavoriteButton channel={channel} />
+              <button
+                type="button"
+                aria-label="Share channel link"
+                title={shareCopied ? 'Link copied!' : 'Share'}
+                onClick={shareChannel}
+                className="player-button"
+              >
+                {shareCopied ? <Check /> : <Share2 />}
+              </button>
               {pipSupported && (
                 <button
                   type="button"
