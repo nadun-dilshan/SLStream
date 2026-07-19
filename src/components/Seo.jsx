@@ -10,7 +10,7 @@ export default function Seo({
   title = siteName,
   description = defaultDescription,
   url = defaultUrl,
-  image = '/favicon.svg',
+  image = 'https://slstream.nadun.me/og-image.png',
   type = 'website',
   noIndex = false,
 }) {
