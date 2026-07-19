@@ -133,6 +133,15 @@ for (const ch of rawChannels) {
   allChannels.push(ch)
 }
 
+// ─── Channel numbers (stable: assigned in source order) ──────────────────────
+
+allChannels.forEach((ch, i) => {
+  ch.number = i + 1
+})
+
+/** Map<number, channel> — for remote-style quick tuning ("47" → channel 47). */
+export const channelByNumber = new Map(allChannels.map((ch) => [ch.number, ch]))
+
 // ─── Stream health (from nightly GitHub Action → streamStatus.json) ──────────
 
 const deadUrls = new Set(streamStatus.deadUrls || [])

@@ -107,7 +107,7 @@ const HLS_CONFIG = {
   startPosition: -1,
 }
 
-export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCategory, onBack }) {
+export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCategory, onTune, onBack }) {
   const isOnline = useOnlineStatus()
   const videoRef = useRef(null)
   const shellRef = useRef(null)
@@ -135,6 +135,8 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
   const [selectedQuality, setSelectedQuality] = useState(settings.streamQuality || 'auto')
   const [activeQuality, setActiveQuality] = useState('auto')
   const [networkError, setNetworkError] = useState(false)
+  const [digitBuffer, setDigitBuffer] = useState('')
+  const digitTimerRef = useRef(null)
 
   // All URLs for this channel: primary first, then alternates from other sources
   const urls = useMemo(
@@ -410,6 +412,25 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
     return () => document.removeEventListener('fullscreenchange', onFullscreenChange)
   }, [])
 
+  // Remote-style quick tune: type a channel number, tunes after a short pause
+  const handleDigit = useCallback(
+    (digit) => {
+      if (!onTune) return
+      setDigitBuffer((buffer) => {
+        const next = (buffer + digit).slice(0, 4)
+        window.clearTimeout(digitTimerRef.current)
+        digitTimerRef.current = window.setTimeout(() => {
+          setDigitBuffer('')
+          onTune(Number(next))
+        }, 1200)
+        return next
+      })
+    },
+    [onTune],
+  )
+
+  useEffect(() => () => window.clearTimeout(digitTimerRef.current), [])
+
   // Keyboard shortcuts
   useEffect(() => {
     window.clearTimeout(hideTimerRef.current)
@@ -425,6 +446,9 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
         event.preventDefault()
         onNext?.()
       }
+      if (/^[0-9]$/.test(event.key)) {
+        handleDigit(event.key)
+      }
       if (event.key === ' ') {
         event.preventDefault()
         isPlaying ? videoRef.current?.pause() : play()
@@ -437,7 +461,7 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isPlaying, onNext, onPrevious, play, showControls])
+  }, [isPlaying, onNext, onPrevious, play, showControls, handleDigit])
 
   const togglePlay = () => {
     showControls()
@@ -541,6 +565,14 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
       />
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/15 to-black/65" />
+
+      {/* Quick-tune digit overlay */}
+      {digitBuffer && (
+        <div className="pointer-events-none absolute right-6 top-6 z-40 rounded-lg border border-white/15 bg-black/75 px-5 py-3 backdrop-blur tv:right-10 tv:top-10">
+          <span className="font-mono text-4xl font-black tracking-widest text-white tv:text-6xl">{digitBuffer}</span>
+          <span className="ml-2 text-xs font-bold uppercase tracking-widest text-white/40 tv:text-lg">CH</span>
+        </div>
+      )}
 
       {showSpinner && !error && (
         <div className="absolute inset-0 grid place-items-center bg-black/35">

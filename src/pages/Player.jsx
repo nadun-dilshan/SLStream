@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Home } from 'lucide-react'
-import allChannels, { channelIndex, channelsByCategory } from '../lib/allChannels'
+import allChannels, { channelIndex, channelsByCategory, channelByNumber } from '../lib/allChannels'
 import VideoPlayer from '../components/VideoPlayer'
 import { useTvStore } from '../store/tvStore'
 import Seo from '../components/Seo'
@@ -73,6 +73,10 @@ export default function Player() {
         onNext={goNext}
         onPrevious={goPrevious}
         onNextInCategory={goNextInCategory}
+        onTune={(number) => {
+          const target = channelByNumber.get(number)
+          if (target && !target.isAdult) navigate(`/live/${target.id}`)
+        }}
         onBack={() => navigate(-1)}
       />
     </div>
