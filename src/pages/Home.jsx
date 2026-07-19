@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Info, Play } from 'lucide-react'
+import { Info, Play, X } from 'lucide-react'
 import allChannels, { byIds, allCategories, channelsByCategory, lankaChannels } from '../lib/allChannels'
 import { useTvStore } from '../store/tvStore'
 import ChannelCard from '../components/ChannelCard'
@@ -20,6 +20,51 @@ const rowCategories = [
   ...ROW_PRIORITY.filter((c) => channelsByCategory.has(c)),
   ...allCategories.filter((c) => !ROW_PRIORITY.includes(c)),
 ]
+
+/** One-time "pick up where you left off" toast, shown once per session. */
+function ResumeToast({ channel }) {
+  const [visible, setVisible] = useState(
+    () => Boolean(channel) && !sessionStorage.getItem('slstream_resume_shown'),
+  )
+
+  useEffect(() => {
+    if (!visible) return undefined
+    sessionStorage.setItem('slstream_resume_shown', '1')
+    const timer = setTimeout(() => setVisible(false), 10000)
+    return () => clearTimeout(timer)
+  }, [visible])
+
+  if (!visible || !channel) return null
+
+  return (
+    <div className="animate-slide-up fixed bottom-20 left-1/2 z-40 w-[min(92vw,26rem)] -translate-x-1/2 lg:bottom-8">
+      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#141414]/95 p-3 shadow-2xl shadow-black/60 backdrop-blur-xl">
+        <Link
+          to={`/live/${channel.id}`}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e50914]/70"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#e50914] text-white shadow-lg shadow-[#e50914]/40">
+            <Play className="h-4 w-4 fill-current" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-[0.6rem] font-black uppercase tracking-widest text-white/40">
+              Continue watching
+            </span>
+            <span className="block truncate text-sm font-bold text-white">{channel.name}</span>
+          </span>
+        </Link>
+        <button
+          type="button"
+          aria-label="Dismiss"
+          onClick={() => setVisible(false)}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-white/40 transition hover:bg-white/10 hover:text-white focus:outline-none"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
 
 export default function Home() {
   const [query, setQuery] = useState('')
@@ -78,7 +123,7 @@ export default function Home() {
                     className="inline-flex h-12 items-center gap-2.5 rounded bg-[#e50914] px-6 text-base font-black text-white shadow-xl shadow-[#e50914]/30 transition hover:bg-[#f6121d] focus:outline-none focus:ring-2 focus:ring-white/80 tv:h-16 tv:px-9 tv:text-2xl"
                   >
                     <Play className="h-5 w-5 fill-current tv:h-6 tv:w-6" />
-                    Play {featured.name}
+                    {featured.id === currentChannelId ? 'Resume' : 'Play'} {featured.name}
                   </Link>
                   <Link
                     to="/search"
@@ -134,6 +179,9 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Cold-start resume toast (once per session) */}
+      <ResumeToast channel={featured.id === currentChannelId ? featured : null} />
     </>
   )
 }
