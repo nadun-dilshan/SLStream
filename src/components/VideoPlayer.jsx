@@ -5,6 +5,7 @@ import {
   Maximize,
   Minimize,
   Pause,
+  PictureInPicture2,
   Play,
   Settings2,
   RotateCcw,
@@ -447,6 +448,23 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
     }
   }
 
+  const pipSupported = typeof document !== 'undefined' && document.pictureInPictureEnabled
+
+  const togglePictureInPicture = async () => {
+    const video = videoRef.current
+    if (!video) return
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture()
+      } else {
+        await video.requestPictureInPicture()
+      }
+    } catch {
+      // Unsupported for this stream — ignore
+    }
+    showControls()
+  }
+
   function toggleFullscreen() {
     const shell = shellRef.current
     if (!shell) return
@@ -678,6 +696,17 @@ export default function VideoPlayer({ channel, onNext, onPrevious, onNextInCateg
                 </label>
               )}
               <FavoriteButton channel={channel} />
+              {pipSupported && (
+                <button
+                  type="button"
+                  aria-label="Picture in picture"
+                  title="Picture in picture"
+                  onClick={togglePictureInPicture}
+                  className="player-button"
+                >
+                  <PictureInPicture2 />
+                </button>
+              )}
               <button type="button" aria-label="Fullscreen" onClick={toggleFullscreen} className="player-button">
                 {isFullscreen ? <Minimize /> : <Maximize />}
               </button>
