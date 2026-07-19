@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import Loading from '../components/Loading'
+import PageSkeleton from '../components/PageSkeleton'
 
 const Home = lazy(() => import('../pages/Home'))
 const Player = lazy(() => import('../pages/Player'))
@@ -14,7 +14,7 @@ export default function AppRoutes() {
   const location = useLocation()
 
   return (
-    <Suspense fallback={<Loading label="Tuning live channels" />}>
+    <Suspense fallback={<PageSkeleton />}>
       {/* CSS fade keyed by path — replaces framer-motion page transitions */}
       <div key={location.pathname} className="animate-fade-in min-h-full">
         <Routes location={location}>
