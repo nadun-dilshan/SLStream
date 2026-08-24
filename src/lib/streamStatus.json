@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-08-23T21:45:28.871Z",
+  "checkedAt": "2026-08-24T21:54:21.918Z",
   "total": 403,
   "deadUrls": [
     "http://103.175.73.12:8080/live/13/13_0.m3u8",
@@ -19,6 +19,7 @@
     "http://103.213.31.111/HBOHD/index.m3u8",
     "http://149.71.34.166:8002/play/a012/index.m3u8",
     "http://149.71.34.166:8002/play/a013/index.m3u8",
+    "http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8",
     "http://m.live.net.sa:1935/live/quran/playlist.m3u8",
     "http://m.live.net.sa:1935/live/sunnah/chunklist.m3u8?v=1",
     "http://m.live.net.sa:1935/live/sunnah/playlist.m3u8",
@@ -116,6 +117,7 @@
     "https://cdn1.skygo.mn/live/disk1/Lotus/HLSv3-FTA/Lotus-avc1_2089200=342-mp4a_256000_eng=343.m3u8",
     "https://d2396zb8liu8hs.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/DistroTV-MuxIP-SportsFirstTV/409.m3u8",
     "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/fuel-tv/playlist.m3u8?ads.vf=gbdyvfXODOK",
+    "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/stream02/streamPlaylist.m3u8",
     "https://edge3-moblive.yuppcdn.net/drm/smil:jayamagatvdrm.smil/index.m3u8",
     "https://edge3-moblive.yuppcdn.net/drm1/smil:shraddhatvdrm.smil/index.m3u8",
     "https://edge3-moblive.yuppcdn.net/drm1/smil:thebuddhistdrm.smil/index.m3u8",
