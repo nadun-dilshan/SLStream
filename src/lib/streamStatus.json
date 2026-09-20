@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-19T23:19:29.814Z",
+  "checkedAt": "2026-09-20T23:22:33.918Z",
   "total": 403,
   "deadUrls": [
     "http://103.175.73.12:8080/live/13/13_0.m3u8",
@@ -17,10 +17,14 @@
     "http://103.175.73.12:8080/live/417/417_0.m3u8",
     "http://103.175.73.12:8080/live/52/52_0.m3u8",
     "http://103.213.31.111/HBOHD/index.m3u8",
-    "http://115.187.41.216:8080/hls/digitalfashion/index.m3u8",
     "http://149.71.34.166:8002/play/a012/index.m3u8",
     "http://149.71.34.166:8002/play/a013/index.m3u8",
     "http://znty.dyndns.org:5010/hls/eleven1.m3u8",
+    "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8",
+    "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8",
+    "https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8",
+    "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8",
+    "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8",
     "https://2-fss-2.streamhoster.com/pl_140/amlst%3a200914-1298290/chunklist_b2000000.m3u8",
     "https://akdnetwork.co.in/live/cnnew/index.m3u8",
     "https://akdnetwork.co.in/live/ctvn/index.m3u8",
@@ -29,8 +33,6 @@
     "https://amg01468-lifeminutetv-lifeminute-klowdtv-r4hhz.amagi.tv/playlist/amg01468-lifeminutetv-lifeminute-klowdtv/playlist.m3u8",
     "https://amg02873-kravemedia-mtrspt1-distrotv-mnsrl.amagi.tv/playlist/amg02873-kravemedia-mtrspt1-distrotv/playlist.m3u8",
     "https://andro.226503.xyz/checklist/androstreamlivebs1.m3u8",
-    "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/atnmusic.stream/playlist.m3u8",
-    "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/cgtn.stream/playlist.m3u8",
     "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/8xmpk.stream/playlist.m3u8",
     "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/Global-tv.stream/playlist.m3u8",
     "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/aljazeera.stream/playlist.m3u8",
@@ -170,8 +172,6 @@
     "https://mini.allinonereborn.fun/tata.php?id=11612",
     "https://mini.allinonereborn.fun/tata.php?id=11614",
     "https://samson.streamerr.co:8081/verbumtv/index.m3u8",
-    "https://server.zillarbarta.com/zbcatun/video.m3u8",
-    "https://stream.asiatvnet.com/1/live/master.m3u8",
-    "https://streams2.sofast.tv/vglive-sk-462904/playlist.m3u8"
+    "https://stream.asiatvnet.com/1/live/master.m3u8"
   ]
 }
