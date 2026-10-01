@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-30T00:40:08.889Z",
+  "checkedAt": "2026-10-01T00:41:37.873Z",
   "total": 403,
   "deadUrls": [
     "http://103.175.73.12:8080/live/13/13_0.m3u8",
@@ -143,6 +143,7 @@
     "https://flc2.technohaat.com/kidscreation_test/index.m3u8",
     "https://g4wlkqqwl23a-hls-live.5centscdn.com/NDTVLANKA/1ff5fa54d14c3ff6c6bd3918bbb7db5d.sdp/playlist.m3u8",
     "https://jk3lz8xklw79-hls-live.5centscdn.com/lpl/d0dbe915091d400bd8ee7f27f0791303.sdp/playlist.m3u8",
+    "https://live-stream.utkalbongo.com/hls/livebanglatvstream.m3u8",
     "https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8",
     "https://live.presstv.ir/hls/presstv_5_482/index.m3u8",
     "https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8",
@@ -169,6 +170,8 @@
     "https://mini.allinonereborn.fun/tata.php?id=11612",
     "https://mini.allinonereborn.fun/tata.php?id=11614",
     "https://samson.streamerr.co:8081/verbumtv/index.m3u8",
+    "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/playlist.m3u8",
+    "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/tracks-v1a1/mono.m3u8",
     "https://stream.asiatvnet.com/1/live/master.m3u8"
   ]
 }
