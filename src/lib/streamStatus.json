@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T23:27:51.222Z",
+  "checkedAt": "2026-10-20T00:31:07.603Z",
   "total": 403,
   "deadUrls": [
     "http://103.175.73.12:8080/live/13/13_0.m3u8",
@@ -23,11 +23,6 @@
     "http://202.70.146.135:8000/play/a05z/index.m3u8",
     "http://41.205.93.154/STARSPORTS1/index.m3u8",
     "http://znty.dyndns.org:5010/hls/eleven1.m3u8",
-    "https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8",
-    "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8",
-    "https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8",
-    "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8",
-    "https://1nyaler.streamhostingcdn.top/stream/89/index.m3u8",
     "https://2-fss-2.streamhoster.com/pl_140/amlst%3a200914-1298290/chunklist_b2000000.m3u8",
     "https://5ca3e84a76d30.streamlock.net/tv43gto/tv43gto.smil/.m3u8",
     "https://akdnetwork.co.in/live/cnnew/index.m3u8",
@@ -141,7 +136,6 @@
     "https://cdn4.skygo.mn/live/disk1/Discovery_Asia/HLSv3-FTA/Discovery_Asia-avc1_3000000=67-mp4a_256000_eng=12.m3u8",
     "https://cdn4.skygo.mn/live/disk1/THT/HLSv3-FTA/THT.m3u8",
     "https://cdn4.skygo.mn/live/disk1/TNT4/HLSv3-FTA/TNT4.m3u8",
-    "https://d1g8wgjurz8via.cloudfront.net/bpk-tv/ColorsHD/default/Zeebanglahd.m3u8",
     "https://d2396zb8liu8hs.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/DistroTV-MuxIP-SportsFirstTV/409.m3u8",
     "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/fuel-tv/playlist.m3u8?ads.vf=gbdyvfXODOK",
     "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/Caze_TV.m3u8",
@@ -158,7 +152,6 @@
     "https://live.presstv.ir/hls/presstv_5_482/index.m3u8",
     "https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8",
     "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8",
-    "https://live20.bozztv.com/akamaissh101/ssh101/imaitv/playlist.m3u8",
     "https://liveeu-gcp.alkassdigital.net/alkass1-p/main.m3u8",
     "https://liveeu-gcp.alkassdigital.net/alkass2-p/main.m3u8",
     "https://liveeu-gcp.alkassdigital.net/alkass3-p/main.m3u8",
@@ -180,6 +173,7 @@
     "https://mini.allinonereborn.fun/tata.php?id=11611",
     "https://mini.allinonereborn.fun/tata.php?id=11612",
     "https://mini.allinonereborn.fun/tata.php?id=11614",
+    "https://ntd02.akamaized.net/NTD-UK/index.m3u8",
     "https://ogc-nsprt-tcl-roku-syndication.otteravision.com/ogc/nsprt/nsprt.m3u8",
     "https://samson.streamerr.co:8081/verbumtv/index.m3u8",
     "https://stream.asiatvnet.com/1/live/master.m3u8"
