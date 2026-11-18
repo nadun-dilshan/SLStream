@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T04:05:05.113Z",
+  "checkedAt": "2026-11-18T03:01:29.861Z",
   "total": 403,
   "deadUrls": [
     "http://103.213.31.111/HBOHD/index.m3u8",
@@ -21,7 +21,6 @@
     "https://akdnetwork.co.in/live/ctvn/index.m3u8",
     "https://al-ekhbaria-prod-dub.shahid.net/out/v1/9885cab0a3ec4008b53bae57a27ca76b/index.m3u8",
     "https://al-ekhbaria-prod-dub.shahid.net/out/v1/d443f3203b444032896e3233cb6eaa84/index.m3u8",
-    "https://amg00864-shemarooenterta-shemabollywood-ono-nlwbw.amagi.tv/playlist/amg00864-shemarooenterta-shemabollywood-ono/playlist.m3u8",
     "https://amg01468-lifeminutetv-lifeminute-klowdtv-r4hhz.amagi.tv/playlist/amg01468-lifeminutetv-lifeminute-klowdtv/playlist.m3u8",
     "https://amg02873-kravemedia-mtrspt1-distrotv-mnsrl.amagi.tv/playlist/amg02873-kravemedia-mtrspt1-distrotv/playlist.m3u8",
     "https://andro.226503.xyz/checklist/androstreamlivebs1.m3u8",
@@ -124,7 +123,6 @@
     "https://cdn-4.pishow.tv/live/1231/1231_2.m3u8",
     "https://cdn-4.pishow.tv/live/969/master.m3u8",
     "https://cdn-6.pishow.tv/live/13/master.m3u8",
-    "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00864-shemarooenterta-shemabollywood-ono/playlist.m3u8",
     "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg02873-kravemedia-mtrspt1-distrotv/playlist.m3u8",
     "https://cdn1.skygo.mn/live/disk1/Lotus/HLSv3-FTA/Lotus-avc1_2089200=342-mp4a_256000_eng=343.m3u8",
     "https://cdn4.skygo.mn/live/disk1/Discovery_Asia/HLSv3-FTA/Discovery_Asia-avc1_3000000=67-mp4a_256000_eng=12.m3u8",
@@ -146,6 +144,7 @@
     "https://live.presstv.ir/hls/presstv_5_482/index.m3u8",
     "https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8",
     "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8",
+    "https://live2.cdnbridge.tv/AlmasirahMubasher/Mubasher_All/playlist.m3u8",
     "https://live20.bozztv.com/akamaissh101/ssh101/imaitv/playlist.m3u8",
     "https://live20.bozztv.com/giatvplayout7/giatv-208314/playlist.m3u8",
     "https://live20.bozztv.com/giatvplayout7/giatv-208314/tracks-v1a1/mono.ts.m3u8",
@@ -182,7 +181,6 @@
     "https://mini.allinonereborn.fun/tata.php?id=11614",
     "https://ogc-nsprt-tcl-roku-syndication.otteravision.com/ogc/nsprt/nsprt.m3u8",
     "https://samson.streamerr.co:8081/verbumtv/index.m3u8",
-    "https://server.zillarbarta.com/zbcatun/video.m3u8",
     "https://stream.asiatvnet.com/1/live/master.m3u8"
   ]
 }
